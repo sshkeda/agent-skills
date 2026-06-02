@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "piSkillsDir": { "type": "string", "default": "~/.pi/agent/skills" },
+    "claudeSkillsDir": { "type": "string", "description": "If set, agent-skills also syncs symlinks into this directory (e.g. ~/.claude/skills) without disturbing entries it did not create." },
+    "codexSkillsDir": { "type": "string", "description": "If set, agent-skills also syncs symlinks into this directory (e.g. ~/.codex/skills) without disturbing entries it did not create." },
+    "agentSkillsDir": { "type": "string", "default": "~/.agents/skills" },
+    "skillPatchesFile": { "type": "string", "default": "./skill-patches.json", "description": "Repo-relative or absolute path to a pi-patches-style manifest of local skill text patches." },
+    "importAgentSkills": { "type": "boolean", "default": true },
+    "syncLocalSkillsToAgentSkills": {
+      "type": "boolean",
+      "default": false,
+      "description": "If true, agent-skills also exports configured localSkills into agentSkillsDir as tracked symlinks without touching npx skills-managed real directories."
+    },
+    "ignoredAgentSkills": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" } },
+    "localSkills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "source"],
+        "properties": {
+          "name": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+          "source": { "type": "string" },
+          "enabled": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}

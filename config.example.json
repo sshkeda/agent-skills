@@ -1,0 +1,30 @@
+{
+  "$schema": "./schema.json",
+  "agentSkillsDir": "~/.agents/skills",
+  "claudeSkillsDir": "~/.claude/skills",
+  "codexSkillsDir": "~/.codex/skills",
+  "skillPatchesFile": "./skill-patches.json",
+  "importAgentSkills": true,
+  "syncLocalSkillsToAgentSkills": false,
+  "ignoredAgentSkills": [
+    "office-hours"
+  ],
+  "localSkills": [
+    {
+      "name": "yc-office-hours",
+      "source": "./skills/yc-office-hours"
+    },
+    {
+      "name": "example-product",
+      "source": "${GITHUB}/example-product/skills/example-product"
+    },
+    {
+      "name": "agent-test",
+      "source": "${GITHUB}/agent-test/skills/agent-test"
+    },
+    {
+      "name": "agent-skills",
+      "source": "./skills/agent-skills"
+    }
+  ]
+}

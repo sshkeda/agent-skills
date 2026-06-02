@@ -1,0 +1,11 @@
+[
+  {
+    "id": "yc-office-hours-narrow-trigger",
+    "file": "skills/yc-office-hours/SKILL.md",
+    "intent": "Only trigger YC office hours when the user explicitly asks for YC office hours.",
+    "find": "triggers:\n  - brainstorm this\n  - is this worth building\n  - help me think through\n  - office hours\n",
+    "replace": "triggers:\n  - yc office hours\n",
+    "verify": "triggers:\n  - yc office hours\n",
+    "occurrences": 1
+  }
+]

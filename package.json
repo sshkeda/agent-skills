@@ -1,0 +1,50 @@
+{
+  "name": "agent-skills",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Machine-local agent skill registry and symlink fanout manager.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sshkeda/agent-skills.git"
+  },
+  "homepage": "https://github.com/sshkeda/agent-skills#readme",
+  "bugs": {
+    "url": "https://github.com/sshkeda/agent-skills/issues"
+  },
+  "bin": {
+    "agent-skills": "bin/agent-skills.mjs"
+  },
+  "files": [
+    "AGENTS.md",
+    "README.md",
+    "bin/",
+    "config.example.json",
+    "schema.json",
+    "skill-patches.json",
+    "skills/"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "list": "node bin/agent-skills.mjs list",
+    "check": "node bin/agent-skills.mjs check",
+    "install-bin": "node bin/agent-skills.mjs install-bin",
+    "apply": "node bin/agent-skills.mjs apply",
+    "install-config": "node bin/agent-skills.mjs install-config",
+    "update": "node bin/agent-skills.mjs update",
+    "update:check": "node bin/agent-skills.mjs update --check --skip-npx",
+    "test": "node --test test/agent-skills-cli.mjs",
+    "test:all": "npm test && npm run test:pi-mock",
+    "test:cli": "node --test test/agent-skills-cli.mjs",
+    "test:pi-mock": "node --test test/pi-mock-skills.mjs"
+  },
+  "keywords": [
+    "agent",
+    "codex",
+    "pi",
+    "skills",
+    "symlink"
+  ],
+  "license": "MIT"
+}
