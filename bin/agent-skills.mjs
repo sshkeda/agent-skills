@@ -41,6 +41,8 @@ Notes:
   localSkills are linked into ~/.pi/agent/skills so Pi can discover them.
   importAgentSkills imports non-ignored entries from ~/.agents/skills.
   syncLocalSkillsToAgentSkills can publish localSkills into ~/.agents/skills.
+  check fails on unmanaged symlinks in generated skill dirs (drift from
+  hand-linking); register the source in localSkills instead.
 `);
 }
 
@@ -263,6 +265,20 @@ function patchSkills(args) {
   return 0;
 }
 
+function unmanagedSymlinkIssues(prefix, dir, expectedNames, managedNames) {
+  // agent-skills only ever creates symlinks, so a symlink it does not track
+  // means someone bypassed the registry. Real directories are harness-owned
+  // (npx skills, codex skill-installer) and stay untouched.
+  const issues = [];
+  for (const name of currentEntries(dir)) {
+    if (expectedNames.has(name) || managedNames.has(name)) continue;
+    const entry = path.join(dir, name);
+    if (!fs.lstatSync(entry).isSymbolicLink()) continue;
+    issues.push(`${prefix}:${name}: unmanaged symlink at ${entry}; register its source in localSkills and run agent-skills apply, or remove the link`);
+  }
+  return issues;
+}
+
 function checkClaude(cfg, expected) {
   if (!cfg.claudeSkillsDir) return [];
   const issues = [];
@@ -292,6 +308,7 @@ function checkClaude(cfg, expected) {
     const dest = path.join(cfg.claudeSkillsDir, stale);
     if (pathExists(dest)) issues.push(`claude:${stale}: previously managed but still present at ${dest}; run agent-skills apply to remove`);
   }
+  issues.push(...unmanagedSymlinkIssues("claude", cfg.claudeSkillsDir, new Set(expected.keys()), new Set(state.managedNames)));
   return issues;
 }
 
@@ -324,6 +341,7 @@ function checkCodex(cfg, expected) {
     const dest = path.join(cfg.codexSkillsDir, stale);
     if (pathExists(dest)) issues.push(`codex:${stale}: previously managed but still present at ${dest}; run agent-skills apply to remove`);
   }
+  issues.push(...unmanagedSymlinkIssues("codex", cfg.codexSkillsDir, new Set(expected.keys()), new Set(state.managedNames)));
   return issues;
 }
 
@@ -363,6 +381,7 @@ function checkAgentExports(cfg) {
     const dest = path.join(cfg.agentSkillsDir, stale);
     if (pathExists(dest)) issues.push(`agent:${stale}: previously managed but still present at ${dest}; run agent-skills apply to remove`);
   }
+  issues.push(...unmanagedSymlinkIssues("agent", cfg.agentSkillsDir, new Set(expected.keys()), new Set(state.managedNames)));
   return issues;
 }
 

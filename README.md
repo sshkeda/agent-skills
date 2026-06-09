@@ -36,7 +36,8 @@ directories installed by `npx skills`.
   "ignoredAgentSkills": ["office-hours"],
   "localSkills": [
     { "name": "example-product", "source": "~/gh/example-product/skills/example-product" },
-    { "name": "agent-test", "source": "~/gh/agent-test/skills/agent-test" },
+    { "name": "agent-dogfeed", "source": "~/gh/agent-dogfeed/skills/agent-dogfeed" },
+    { "name": "agent-box", "source": "~/gh/agent-box/skills/agent-box" },
     { "name": "agent-skills", "source": "./skills/agent-skills" }
   ]
 }
@@ -68,10 +69,12 @@ Fields:
 Use this repo as the registry and fanout mechanism, not as a default home for custom skill source files.
 
 - Repo-specific skills live in the owning repository, for example `~/gh/example-product/skills/example-product`.
-- Standalone skills live in their own repository, for example `~/gh/agent-test/skills/agent-test`.
+- Standalone skills live in their own repository, for example `~/gh/agent-dogfeed/skills/agent-dogfeed`.
 - This repo contains only its own `agent-skills` skill and skills it explicitly mirrors or maintains locally, such as `yc-office-hours`.
 
 To migrate a misplaced skill, preserve the current skill content in its owning repo, change its `localSkills` source in `~/.agent-skills/config.json`, run `agent-skills apply` and `agent-skills check`, and then remove the stale source from this repo.
+
+Never hand-symlink a skill directly into a generated skills directory: that exposes it to a single harness and bypasses the registry. `agent-skills check` fails on unmanaged symlinks in the generated directories (harness-owned real directories are left alone); fix the drift by registering the source in `localSkills` and running `agent-skills apply`, which adopts a matching existing symlink in place.
 
 Pi packages and `~/.pi/agent/settings.json` are intentionally out of scope.
 

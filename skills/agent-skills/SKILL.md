@@ -1,6 +1,6 @@
 ---
 name: agent-skills
-description: Manage the machine-local agent skill source registry and generated ~/.pi/agent/skills directory. Use when adding, removing, inspecting, debugging, or reconciling ~/.agent-skills/config.json, ~/.agents/skills, or the agent-skills repo.
+description: Manage the machine-local agent skill source registry and the generated skill directories (~/.pi/agent/skills, ~/.claude/skills, ~/.codex/skills, ~/.agents/skills). Use when adding, removing, inspecting, debugging, or reconciling ~/.agent-skills/config.json, any generated skills directory, or the agent-skills repo. Never hand-symlink a skill into a harness skills directory; register it here instead.
 ---
 
 # agent-skills
@@ -11,16 +11,23 @@ The source of truth is:
 ~/.agent-skills/config.json
 ```
 
-`agent-skills apply` rebuilds Pi's discovery directory:
+`agent-skills apply` fans the registry out to every harness:
 
 ```txt
-~/.pi/agent/skills
+~/.pi/agent/skills   (Pi; fully rebuilt)
+~/.claude/skills     (Claude Code; tracked symlinks added/removed)
+~/.codex/skills      (Codex; tracked symlinks added/removed)
+~/.agents/skills     (cross-agent dir; localSkills exported as tracked symlinks)
 ```
 
-as symlinks to configured `localSkills` plus imported entries from `~/.agents/skills`.
-When `syncLocalSkillsToAgentSkills` is true, it also exports configured
-`localSkills` into `~/.agents/skills` as tracked symlinks while leaving
-`npx skills`-managed real directories alone.
+Codex also discovers `~/.agents/skills` natively, so a registered skill
+reaches every harness. Harness-owned real directories (`npx skills` installs,
+codex `.system` skills) are never touched.
+
+Never symlink a skill into one of these directories by hand — that exposes it
+to one harness only and bypasses the registry. Add it to `localSkills` and run
+`agent-skills apply`; `agent-skills check` fails on any unmanaged symlink it
+finds in a generated directory.
 
 ## Config
 
@@ -50,3 +57,12 @@ agent-skills update
 ```
 
 Pi packages and `~/.pi/agent/settings.json` are intentionally out of scope.
+
+## Forward-testing with agent-dogfeed
+
+After registering or changing a skill, forward-test it with the
+`agent-dogfeed` skill: `agent-dogfeed codex|claude --skill <name> ...` resolves
+named skills from the generated `~/.codex/skills` / `~/.claude/skills`, so a
+skill must be registered and applied here before a probe can load it by name
+(paths work without registration). Dogfeed probes hide `~/.agents/skills` from
+the fresh agent; only skills passed with `--skill` are present.

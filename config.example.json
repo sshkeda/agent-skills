@@ -19,8 +19,12 @@
       "source": "${GITHUB}/example-product/skills/example-product"
     },
     {
-      "name": "agent-test",
-      "source": "${GITHUB}/agent-test/skills/agent-test"
+      "name": "agent-dogfeed",
+      "source": "${GITHUB}/agent-dogfeed/skills/agent-dogfeed"
+    },
+    {
+      "name": "agent-box",
+      "source": "${GITHUB}/agent-box/skills/agent-box"
     },
     {
       "name": "agent-skills",

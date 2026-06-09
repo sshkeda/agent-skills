@@ -254,6 +254,25 @@ test("apply refuses to overwrite a foreign symlink or real directory in claudeSk
   }
 });
 
+test("check flags unmanaged symlinks in claudeSkillsDir but leaves harness-owned real directories alone", () => {
+  const t = tempConfigWithClaude({ preExistingClaudeSkills: ["claude-own-skill"] });
+  try {
+    assert.equal(run(["apply"], t.configPath).status, 0);
+    assert.equal(run(["check"], t.configPath).status, 0, "real-directory claude-own-skill must not fail check");
+
+    const bypass = join(t.dir, "bypass-target");
+    makeSkill(bypass, "bypass-skill");
+    symlinkSync(bypass, join(t.claudeSkillsDir, "bypass-skill"));
+
+    const check = run(["check"], t.configPath);
+    assert.equal(check.status, 1);
+    assert.match(check.stderr, /claude:bypass-skill: unmanaged symlink .* register its source in localSkills/);
+    assert.doesNotMatch(check.stderr, /claude-own-skill/);
+  } finally {
+    rmSync(t.dir, { recursive: true, force: true });
+  }
+});
+
 function tempConfigWithAgentExport(opts = {}) {
   const t = tempConfig();
   if (opts.preExistingAgentSkills) {
